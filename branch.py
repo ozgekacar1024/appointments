@@ -1,27 +1,42 @@
-from typing import Self
 import mysql.connector
-import json
+from database import get_db_config
 
-class BranchTable:
-    def _init_(self, host, user, password, database):
-        self.connection = mysql.connector.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=database
-        )
-        self.cursor = self.connection.cursor()
 
-def update_branch(branch_id, new_name, new_city, new_franchise):
-    query = "UPDATE branch SET branch_name = %s, branch_city = %s, branch_franchise = %s WHERE branch_id = %s"
-    values = (new_name, new_city, new_franchise, branch_id)
+def get_connection():
+    db_config = get_db_config()
+    return mysql.connector.connect(**db_config)
 
-# Güncelleme işlemi
-branch_id_to_update = "4"
-new_branch_name = "aaaa"
-new_branch_city = "adana"
-new_branch_franchise = "1"
 
-update_branch(branch_id_to_update, new_branch_name, new_branch_city, new_branch_franchise)
-Self.cursor.execute()
-Self.connection.cursor()
+def create_branch(name, location, frenchise):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO Branch (branch_name, branch_city,branch_frenchise) VALUES (%s, %s,%s)", (name, location, frenchise))
+    conn.commit()
+    conn.close()
+
+
+def update_branch(branch_id, name, location, frenchise):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE Branch SET branch_name= %s, branch_city = %s, branch_frenshise=%s, WHERE id = %s",
+                   (name, location, frenchise, branch_id))
+    conn.commit()
+    conn.close()
+
+
+def delete_branch(branch_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM Branch WHERE id = %s", (branch_id,))
+    conn.commit()
+    conn.close()
+
+
+def fetch_branches():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM Branch")
+    branches = cursor.fetchall()
+    conn.close()
+    return branches

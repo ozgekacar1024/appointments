@@ -1,21 +1,34 @@
-from database import AppointmentDatabase
-from branch import BranchTable
-import json
+from fastapi import FastAPI, Request
+from branch import create_branch, update_branch, delete_branch, fetch_branches
+import uvicorn
 
-# JSON dosyasını okuma
-with open('config.json') as json_file:
-    db_config = json.load(json_file)
+app = FastAPI()
 
 
-# Create the appointment database if it doesn't exist
-appointment_db = AppointmentDatabase(**db_config)
-appointment_db.create_database()
+@app.post("/create_branch")
+async def create_branch_endpoint(request: Request):
+    data = await request.json()
+    branch_name = data['name']
 
-branch_table = BranchTable(**db_config)
+    # create_branch(name, location)
+    return {"message": "Branch created successfully"}
 
-# Insert a new branch
-branch_data = ("Branch A", "City X")
-branch_table.insert_branch(branch_data)
 
-# Update a branch
-branch_table.update_branch(1, ("New Branch Name", "New Location"))
+@app.put("/update_branch/{branch_id}")
+async def update_branch_endpoint(branch_id: int, name: str, location: str):
+    update_branch(branch_id, name, location)
+    return {"message": "Branch updated successfully"}
+
+
+@app.delete("/delete_branch/{branch_id}")
+async def delete_branch_endpoint(branch_id: int):
+    delete_branch(branch_id)
+    return {"message": "Branch deleted successfully"}
+
+
+@app.get("/get_branch")
+async def get_branches_endpoint():
+    return fetch_branches()
+
+if _name_ == "_main_":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
