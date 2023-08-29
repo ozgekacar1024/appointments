@@ -6,6 +6,7 @@ import json
 with open('config.json') as json_file:
     db_config = json.load(json_file)
 
+
 # Create the appointment database if it doesn't exist
 appointment_db = AppointmentDatabase(**db_config)
 appointment_db.create_database()

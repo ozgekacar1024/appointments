@@ -1,5 +1,6 @@
+from typing import Self
 import mysql.connector
-
+import json
 
 class BranchTable:
     def _init_(self, host, user, password, database):
@@ -11,16 +12,16 @@ class BranchTable:
         )
         self.cursor = self.connection.cursor()
 
-    def _del_(self):
-        self.connection.close()
+def update_branch(branch_id, new_name, new_city, new_franchise):
+    query = "UPDATE branch SET branch_name = %s, branch_city = %s, branch_franchise = %s WHERE branch_id = %s"
+    values = (new_name, new_city, new_franchise, branch_id)
 
-    def insert_branch(self, branch_data):
-        query = "INSERT INTO branch (name, location) VALUES (%s, %s)"
-        self.cursor.execute(query, branch_data)
-        self.connection.commit()
+# Güncelleme işlemi
+branch_id_to_update = "4"
+new_branch_name = "aaaa"
+new_branch_city = "adana"
+new_branch_franchise = "1"
 
-    def update_branch(self, branch_id, new_data):
-        query = "UPDATE branch SET name = %s, location = %s WHERE id = %s"
-        self.cursor.execute(query, (*new_data, branch_id))
-        self.connection.commit()
-        
+update_branch(branch_id_to_update, new_branch_name, new_branch_city, new_branch_franchise)
+Self.cursor.execute()
+Self.connection.cursor()
